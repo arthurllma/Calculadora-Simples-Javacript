@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora no VS Code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #444;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .calculator {
+            background-color: #2c3e50;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin: 0 auto;
+            width: 300px;
+        }
+        
+        .display {
+            background-color: #000;
+            color: white;
+            text-align: right;
+            padding: 20px;
+            font-size: 2rem;
+            height: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background-color: #34495e;
+        }
+        
+        button {
+            border: none;
+            padding: 20px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .number {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+        
+        .number:hover {
+            background-color: #bdc3c7;
+        }
+        
+        .operation {
+            background-color: #e67e22;
+            color: white;
+        }
+        
+        .operation:hover {
+            background-color: #d35400;
+        }
+        
+        .equals {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .equals:hover {
+            background-color: #2ecc71;
+        }
+        
+        .clear, .all-clear {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .clear:hover, .all-clear:hover {
+            background-color: #c0392b;
+        }
+        
+        .zero {
+            grid-column: span 2;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+            
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora em JavaScript</h1>
+        
+        <div class="instructions">
+            <h3>Como testar no VS Code:</h3>
+            <ol>
+                <li>Salve este arquivo como <code>calculadora.html</code></li>
+                <li>Clique com o botão direito no arquivo no VS Code</li>
+                <li>Selecione "Open with Live Server" (se tiver a extensão)</li>
+                <li>Ou clique direito e "Open in Browser"</li>
+                <li>Ou simplesmente dê duplo clique no arquivo no explorador</li>
+            </ol>
+        </div>
+        
+        <div class="calculator">
+            <div class="display">0</div>
+            <div class="buttons">
+                <button class="all-clear">AC</button>
+                <button class="clear">C</button>
+                <button class="operation">%</button>
+                <button class="operation">÷</button>
+                
+                <button class="number">7</button>
+                <button class="number">8</button>
+                <button class="number">9</button>
+                <button class="operation">×</button>
+                
+                <button class="number">4</button>
+                <button class="number">5</button>
+                <button class="number">6</button>
+                <button class="operation">-</button>
+                
+                <button class="number">1</button>
+                <button class="number">2</button>
+                <button class="number">3</button>
+                <button class="operation">+</button>
+                
+                <button class="number zero">0</button>
+                <button class="number">.</button>
+                <button class="equals">=</button>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Calculadora criada com HTML, CSS e JavaScript</p>
+            <p>por: Arthur Lima</p>
+        </div>
+    </div>
+
+    <script>
+        // Seleção de elementos
+        const display = document.querySelector('.display');
+        const numberButtons = document.querySelectorAll('.number');
+        const operationButtons = document.querySelectorAll('.operation');
+        const equalsButton = document.querySelector('.equals');
+        const clearButton = document.querySelector('.clear');
+        const allClearButton = document.querySelector('.all-clear');
+        
+        // Variáveis para armazenar o estado da calculadora
+        let firstOperand = null;
+        let currentOperation = null;
+        let shouldResetDisplay = false;
+        
+        // Função para atualizar o display
+        function updateDisplay(value) {
+            if (display.textContent === '0' || shouldResetDisplay) {
+                display.textContent = value;
+                shouldResetDisplay = false;
+            } else {
+                // Impede que o display fique muito longo
+                if (display.textContent.length < 10) {
+                    display.textContent += value;
+                }
+            }
+        }
+        
+        // Adiciona event listeners aos botões numéricos
+        numberButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                updateDisplay(button.textContent);
+            });
+        });
+        
+        // Botão de limpar (C)
+        clearButton.addEventListener('click', () => {
+            display.textContent = '0';
+        });
+        
+        // Botão de all clear (AC)
+        allClearButton.addEventListener('click', () => {
+            display.textContent = '0';
+            firstOperand = null;
+            currentOperation = null;
+        });
+        
+        // Adiciona funcionalidade básica de operações
+        operationButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                firstOperand = parseFloat(display.textContent);
+                currentOperation = button.textContent;
+                shouldResetDisplay = true;
+            });
+        });
+        
+        // Adiciona funcionalidade ao botão de igual
+        equalsButton.addEventListener('click', () => {
+            if (firstOperand === null || currentOperation === null) return;
+            
+            const secondOperand = parseFloat(display.textContent);
+            let result = 0;
+            
+            switch (currentOperation) {
+                case '+':
+                    result = firstOperand + secondOperand;
+                    break;
+                case '-':
+                    result = firstOperand - secondOperand;
+                    break;
+                case '×':
+                    result = firstOperand * secondOperand;
+                    break;
+                case '÷':
+                    if (secondOperand === 0) {
+                        display.textContent = 'Erro';
+                        firstOperand = null;
+                        currentOperation = null;
+                        return;
+                    }
+                    result = firstOperand / secondOperand;
+                    break;
+                case '%':
+                    result = firstOperand % secondOperand;
+                    break;
+            }
+            
+            // Formata o resultado para caber no display
+            display.textContent = parseFloat(result.toFixed(8)).toString();
+            firstOperand = null;
+            currentOperation = null;
+        });
+    </script>
+</body>
+</html>
