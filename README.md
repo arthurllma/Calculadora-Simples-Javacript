@@ -7,3 +7,4 @@ Como testar no VS Code:
                 <li>Selecione "Open with Live Server" (se tiver a extensão)</li>
                 <li>Ou clique direito e "Open in Browser"</li>
                 <li>Ou simplesmente dê duplo clique no arquivo no explorador</li>
+            </ol>
